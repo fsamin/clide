@@ -124,8 +124,7 @@ func uploadFile(location stow.Location, c *cli.Context) error {
 	fmt.Printf("Uploading %v to container %s\n", files, dest)
 
 	var container stow.Container
-	//prefix was dest
-	containers, _, err := location.Containers("", stow.CursorStart, 100)
+	containers, _, err := location.Containers(dest, stow.CursorStart, 100)
 	if err != nil {
 		return err
 	}
