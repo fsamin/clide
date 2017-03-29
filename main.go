@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/graymeta/stow"
+	"github.com/graymeta/stow/s3"
 	"github.com/graymeta/stow/swift"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -32,18 +33,61 @@ var swiftFlags = []cli.Flag{
 	},
 }
 
+var s3Flags = []cli.Flag{
+	cli.StringFlag{
+		Name:   "key",
+		EnvVar: "AWS_ACCESS_KEY_ID",
+	},
+	cli.StringFlag{
+		Name:   "secret",
+		EnvVar: "AWS_SECRET_ACCESS_KEY",
+	},
+	cli.StringFlag{
+		Name:   "region",
+		EnvVar: "AWS_DEFAULT_REGION",
+	},
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "stowcp"
-	app.Usage = "stowcp <file 0> [file 1] ... [file n] <swift container>"
+	app.Usage = "stowcp <file 0> [file 1] ... [file n] <container/bucket/what else>"
 	app.Commands = []cli.Command{
 		cli.Command{
 			Name:   "swift",
 			Flags:  swiftFlags,
 			Action: swiftAction,
 		},
+		cli.Command{
+			Name:   "s3",
+			Flags:  s3Flags,
+			Action: s3Action,
+		},
 	}
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func s3Action(c *cli.Context) error {
+	secret := c.String("secret")
+	key := c.String("key")
+	region := c.String("region")
+
+	cfg := stow.ConfigMap{
+		s3.ConfigAccessKeyID: key,
+		s3.ConfigSecretKey:   secret,
+		s3.ConfigRegion:      region,
+	}
+
+	location, err := stow.Dial(s3.Kind, cfg)
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return err
+	}
+
+	return uploadFile(location, c)
 }
 
 func swiftAction(c *cli.Context) error {
@@ -80,7 +124,8 @@ func uploadFile(location stow.Location, c *cli.Context) error {
 	fmt.Printf("Uploading %v to container %s\n", files, dest)
 
 	var container stow.Container
-	containers, _, err := location.Containers("dest", stow.CursorStart, 100)
+	//prefix was dest
+	containers, _, err := location.Containers("", stow.CursorStart, 100)
 	if err != nil {
 		return err
 	}
@@ -110,6 +155,7 @@ func uploadFile(location stow.Location, c *cli.Context) error {
 		}
 
 		url := strings.Replace(item.URL().String(), "swift://", "https://", 1)
+		url = strings.Replace(url, "s3://", "", 1)
 		fmt.Printf("%s\t => %s\n", name, url)
 
 	}
