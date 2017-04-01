@@ -2,6 +2,9 @@
 
 Cloud storage files management CLI
 
+
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/fsamin/clide/lib) [![Build Status](https://travis-ci.org/fsamin/clide.svg?branch=master)](https://travis-ci.org/fsamin/clide) [![Go Report Card](https://goreportcard.com/badge/github.com/fsamin/clide)](https://goreportcard.com/report/github.com/fsamin/clide)
+
 Supported providers:
 
 - Openstack Swift: `swift`
