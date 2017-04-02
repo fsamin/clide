@@ -6,7 +6,11 @@ import (
 )
 
 type uploader interface {
-	uploadFile(c *cli.Context) error
+	uploadFiles(c *cli.Context) error
+}
+
+type downloader interface {
+	downloadFiles(c *cli.Context) error
 }
 
 type provider interface {

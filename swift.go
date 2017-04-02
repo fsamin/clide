@@ -53,10 +53,18 @@ func (swiftProvider) location(c *cli.Context) (stow.Location, error) {
 	return stow.Dial(swift.Kind, cfg)
 }
 
-func (p swiftProvider) uploadFile(c *cli.Context) error {
+func (p swiftProvider) uploadFiles(c *cli.Context) error {
 	l, err := p.location(c)
 	if err != nil {
 		return err
 	}
 	return uploadFile(l, c)
+}
+
+func (p swiftProvider) downloadFiles(c *cli.Context) error {
+	l, err := p.location(c)
+	if err != nil {
+		return err
+	}
+	return downloadFiles(l, c)
 }

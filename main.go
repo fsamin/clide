@@ -29,12 +29,25 @@ func main() {
 		if pu, ok := p.(uploader); ok {
 			cmd.Subcommands = append(cmd.Subcommands, cli.Command{
 				Name:        "upload",
+				ShortName:   "up",
 				Usage:       "clide " + p.name() + " upload <file 0> [file 1] ... [file n] <destination>",
 				Description: "Upload files",
 				Flags:       p.flags(),
-				Action:      pu.uploadFile,
+				Action:      pu.uploadFiles,
 			})
 		}
+
+		if pu, ok := p.(downloader); ok {
+			cmd.Subcommands = append(cmd.Subcommands, cli.Command{
+				Name:        "download",
+				ShortName:   "dl",
+				Usage:       "clide " + p.name() + " download <container 0> [container 1] ... [container n] <destination>",
+				Description: "Download all files from several containers",
+				Flags:       p.flags(),
+				Action:      pu.downloadFiles,
+			})
+		}
+
 		app.Commands = append(app.Commands, cmd)
 	}
 

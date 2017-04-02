@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"io/ioutil"
 	"path/filepath"
-	"strings"
 
 	"github.com/graymeta/stow"
 )
 
 //UploadFiles upload files on a stow.Location. It may creates the destination if not exists
-func UploadFiles(location stow.Location, destination string, files []string) ([]File, error) {
+func UploadFiles(location stow.Location, destination string, files []string, logger ProgressPrinter) ([]File, error) {
 	var container stow.Container
 	containers, _, err := location.Containers(destination, stow.CursorStart, 10000)
 	if err != nil {
@@ -32,6 +31,9 @@ func UploadFiles(location stow.Location, destination string, files []string) ([]
 
 	res := []File{}
 	for i := range files {
+		if logger != nil {
+			logger("Uploading %s...\n", files[i])
+		}
 		btes, err := ioutil.ReadFile(files[i])
 		if err != nil {
 			return nil, err
@@ -42,8 +44,7 @@ func UploadFiles(location stow.Location, destination string, files []string) ([]
 			return nil, err
 		}
 
-		url := strings.Replace(item.URL().String(), "swift://", "https://", 1)
-		url = strings.Replace(url, "s3://", "", 1)
+		url := URL(item)
 
 		res = append(res, File{
 			Filename: files[i],

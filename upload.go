@@ -19,9 +19,7 @@ func uploadFile(location stow.Location, c *cli.Context) error {
 	dest := files[len(files)-1:][0]
 	files = files[:len(files)-1]
 
-	fmt.Printf("Uploading %v to container %s\n", files, dest)
-
-	uploadedFiles, err := clide.UploadFiles(location, dest, files)
+	uploadedFiles, err := clide.UploadFiles(location, dest, files, fmt.Printf)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err)
 		os.Exit(1)

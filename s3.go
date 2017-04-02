@@ -47,10 +47,18 @@ func (s3Provider) location(c *cli.Context) (stow.Location, error) {
 	return stow.Dial(s3.Kind, cfg)
 }
 
-func (p s3Provider) uploadFile(c *cli.Context) error {
+func (p s3Provider) uploadFiles(c *cli.Context) error {
 	l, err := p.location(c)
 	if err != nil {
 		return err
 	}
 	return uploadFile(l, c)
+}
+
+func (p s3Provider) downloadFiles(c *cli.Context) error {
+	l, err := p.location(c)
+	if err != nil {
+		return err
+	}
+	return downloadFiles(l, c)
 }

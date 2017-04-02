@@ -12,6 +12,17 @@ Supported providers:
 
 ## Commands
 
+### Download
+
+Upload multiples containers/buckets to a single local directory with:
+
+```bash
+    clide <provider> download <container 0> [container 1] ... [container n] <destination directory>
+```
+
+- `provider` must be on the supported providers
+- `destination` is the destination directory.
+
 ### Upload
 
 Upload files to a container/bucket with:
